@@ -1,6 +1,6 @@
 allennlp==1.0.0
+sentencepiece==0.1.91
 pytesseract
 flask
 pdf2image
 Pillow
-uno
