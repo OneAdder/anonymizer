@@ -183,8 +183,6 @@ class LongSequencePredictor(Predictor):
 
         assert len(document_tokens) == len(document_tags), (document_tokens, document_tags)
         output_dict = {
-            "entities": self.get_entities_from_spans(document_tokens, document_tags, text) if self._return_entities
-                                                                                           else {},
             "tags": document_tags,
             "tokens": document_tokens
         }
