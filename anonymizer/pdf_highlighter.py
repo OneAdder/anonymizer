@@ -10,8 +10,8 @@ class PDFHighlighter:
     BLURRED_COLOUR = (0, 255, 0, 64)
     HIDDEN_COLOUR = (0, 0, 0, 255)
 
-    _BLURRED_FILENAME = 'blurred.pdf'
-    _HIDDEN_FILENAME = 'hidden.pdf'
+    BLURRED_FILENAME = 'blurred.pdf'
+    HIDDEN_FILENAME = 'hidden.pdf'
 
     def __init__(self,
                  input_data: Union[Path, List[PpmImagePlugin.PpmImageFile]],
@@ -25,10 +25,10 @@ class PDFHighlighter:
                              'количеством страниц в поданных координатах')
         self.blurred_images = list(self._highlight(self.BLURRED_COLOUR))
         self.hidden_images = list(self._highlight(self.HIDDEN_COLOUR))
-        self.blurred_pdf = output_path / self._BLURRED_FILENAME
-        self.to_pdf(self.blurred_images, output_path / self._BLURRED_FILENAME)
-        self.hidden_pdf = output_path / self._HIDDEN_FILENAME
-        self.to_pdf(self.hidden_images, output_path / self._HIDDEN_FILENAME)
+        self.blurred_pdf = output_path / self.BLURRED_FILENAME
+        self.to_pdf(self.blurred_images, output_path / self.BLURRED_FILENAME)
+        self.hidden_pdf = output_path / self.HIDDEN_FILENAME
+        self.to_pdf(self.hidden_images, output_path / self.HIDDEN_FILENAME)
 
     def _highlight(self, colour: Tuple[int, int, int, int],
                    ) -> Iterable[PpmImagePlugin.PpmImageFile]:

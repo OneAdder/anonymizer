@@ -83,13 +83,16 @@ def anonymize():
 
 @app.route('/load_pdf', methods=['GET'])
 def load_pdf():
-    filename = request.args.get('name')
-    if not filename:
+    name = request.args.get('name')
+    hidden = request.args.get('hidden')
+    if not name:
         abort(405, 'В запросе не подано имя файла ("name")')
-    file_path = OUTPUT_PATH / filename
+    file_path = OUTPUT_PATH / name
     if not file_path.exists():
-        abort(404, f'Нет такого файла {filename}')
-    return send_file(file_path)
+        abort(404, f'Нет такого файла {name}')
+    filename = PDFHighlighter.HIDDEN_FILENAME \
+        if hidden else PDFHighlighter.BLURRED_FILENAME
+    return send_file(file_path / filename)
 
 
 @app.route('/list_pdf', methods=['GET'])
