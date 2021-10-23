@@ -231,7 +231,10 @@ class NewsNER:
         self._zero_overlap = False
         self._overlap = self._token_window // 3
         self.n_iterations = n_iterations
-        overrides = {}
+        overrides = {
+            "dataset_reader.token_indexers.tokens.model_name": "DeepPavlov/rubert-base-cased",
+            "model.text_field_embedder.token_embedders.tokens.model_name": "DeepPavlov/rubert-base-cased"
+        }
         # overrides.pop("dataset_reader.tokenizer.model_name")
         overrides['dataset_reader.token_indexers.tokens.type'] = 'pretrained_transformer_mismatched'
         # overrides['dataset_reader.min_len'] = token_window
