@@ -1,6 +1,6 @@
 from copy import deepcopy
 from pathlib import Path
-from typing import Iterable, List, Optional, Tuple
+from typing import Iterable, List, Optional, Tuple, Union
 from pdf2image.pdf2image import convert_from_path
 from PIL import ImageDraw, PpmImagePlugin
 
@@ -14,20 +14,21 @@ class PDFHighlighter:
     _HIDDEN_FILENAME = 'hidden.pdf'
 
     def __init__(self,
-                 input_path: Path,
+                 input_data: Union[Path, List[PpmImagePlugin.PpmImageFile]],
                  output_path: Path,
                  coordinates: List[List[Tuple[int, int, int, int]]]):
         self._coordinates = coordinates
-        self._input_images = convert_from_path(input_path, dpi=self.DPI)
+        self._input_images = convert_from_path(input_data, dpi=self.DPI) \
+            if isinstance(input_data, Path) else input_data
         if len(self._coordinates) != len(self._input_images):
             raise ValueError('Количество страниц в PDF не совпадает с '
                              'количеством страниц в поданных координатах')
         self.blurred_images = list(self._highlight(self.BLURRED_COLOUR))
         self.hidden_images = list(self._highlight(self.HIDDEN_COLOUR))
-        self.blurred_pdf = self.to_pdf(self.blurred_images,
-                                       output_path / self._BLURRED_FILENAME)
-        self.hidden_pdf = self.to_pdf(self.hidden_images,
-                                      output_path / self._HIDDEN_FILENAME)
+        self.blurred_pdf = output_path / self._BLURRED_FILENAME
+        self.to_pdf(self.blurred_images, output_path / self._BLURRED_FILENAME)
+        self.hidden_pdf = output_path / self._HIDDEN_FILENAME
+        self.to_pdf(self.hidden_images, output_path / self._HIDDEN_FILENAME)
 
     def _highlight(self, colour: Tuple[int, int, int, int],
                    ) -> Iterable[PpmImagePlugin.PpmImageFile]:
