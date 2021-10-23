@@ -249,14 +249,14 @@ class NewsNER:
         )
         self._inner_tokenizer = CoordsWhitespaceTokenizer()
 
-    def predict(self, tokens: List[Token]) -> List[str]:
+    def predict(self, tokens: List[str]) -> List[str]:
         """
         This wrapper does not handle models other than `crf_tagger`-like predictor
         :param tokens: list of document tokens
         :return: simplified predictions. Note that as for now, we do not need
             complex structure
         """
-        tokens = self._inner_tokenizer.tokenize(' '.join([token.text for token in tokens]))
+        tokens = self._inner_tokenizer.tokenize(' '.join(tokens))
         n = len(tokens)
         start = 0
         end = 0
