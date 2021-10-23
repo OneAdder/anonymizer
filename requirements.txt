@@ -1,3 +1,6 @@
 allennlp==1.0.0
-streamlit==0.82.0
-pytesseract==0.3.7
+pytesseract
+flask
+pdf2image
+Pillow
+uno
