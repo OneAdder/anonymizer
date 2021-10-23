@@ -42,12 +42,11 @@ def anonymize():
         page = []
         for j, word in enumerate(ocr_result['text']):
             (x, y, w, h) = (
-                ocr_result['left'][i],
-                ocr_result['top'][i],
-                ocr_result['width'][i],
-                ocr_result['height'][i]
+                ocr_result['left'][j],
+                ocr_result['top'][j],
+                ocr_result['width'][j],
+                ocr_result['height'][j]
             )
-            page.append((x, y, x + w, y + h))
             if word.strip():
                 if not equals[token_counter]:
                     page.append((x, y, x + w, y + h))
