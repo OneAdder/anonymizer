@@ -1,10 +1,14 @@
 import os
+import traceback
 from datetime import datetime
 from pathlib import Path
+from typing import List, Tuple
 from flask import abort, jsonify, request, send_file, Flask
 from pdf2image import convert_from_path
+from PIL import PpmImagePlugin
 from pytesseract import image_to_data, Output
 
+from anonymizer.converters import anything2pdf
 from anonymizer.pdf_highlighter import PDFHighlighter
 from anonymizer.predictor import NewsNER
 
@@ -19,19 +23,8 @@ PREDICTOR = NewsNER(ROOT_PATH / 'model' / 'model')
 app = Flask(__name__)
 
 
-@app.route('/')
-def sdf():
-    return 'Артём, привет'
-
-
-@app.route('/anonymize', methods=['POST'])
-def anonymize():
-    if 'file' not in request.files:
-        abort(400, 'Поля `file` нет в реквесте')
-    file = request.files['file']
-    input_path = INPUT_PATH / f'{datetime.now().timestamp()}_{file.filename}'
-    file.save(input_path)
-    images = convert_from_path(input_path, dpi=PDFHighlighter.DPI)
+def run_model(images: List[PpmImagePlugin.PpmImageFile]
+              ) -> List[List[Tuple[int, int, int, int]]]:
     coordinates = []
     for i, image in enumerate(images):
         ocr_result = image_to_data(image, output_type=Output.DICT, lang='rus')
@@ -52,7 +45,37 @@ def anonymize():
                     page.append((x, y, x + w, y + h))
                 token_counter += 1
         coordinates.append(page)
-    highlighter = PDFHighlighter(input_data=images, output_path=OUTPUT_PATH, coordinates=coordinates)
+    return coordinates
+
+
+@app.route('/')
+def sdf():
+    return 'Артём, привет'
+
+
+@app.route('/anonymize', methods=['POST'])
+def anonymize():
+    if 'file' not in request.files:
+        abort(400, 'Поля `file` нет в реквесте')
+    file = request.files['file']
+    filename = f'{datetime.now().timestamp()}_{file.filename}'
+    raw_path = INPUT_PATH / filename
+    file.save(raw_path)
+    input_path = INPUT_PATH / f'{raw_path.name}.pdf'
+    # в конвертере есть байпасс, пдфки он жевать не будет, только пересохранит
+    anything2pdf(raw_path, input_path)
+    images = convert_from_path(input_path, dpi=PDFHighlighter.DPI)
+    try:
+        coordinates = run_model(images)
+    except Exception:
+        traceback.print_exc()
+        abort(500, 'не удалось произвести обезличивание')
+    pdf_path = OUTPUT_PATH / f'{datetime.now().timestamp()}_{file.filename}'
+    pdf_path.mkdir()
+    highlighter = PDFHighlighter(
+        input_data=images,
+        output_path=pdf_path,
+        coordinates=coordinates)
     return jsonify({'blurred': str(highlighter.blurred_pdf),
                     'hidden': str(highlighter.hidden_pdf),
                     })
