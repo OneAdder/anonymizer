@@ -86,7 +86,8 @@ def anonymize():
         not_sure=not_sure,
     )
     return jsonify({'filename': highlighter.blurred_pdf.parent.name,
-                    'input': input_path.name})
+                    'input': input_path.name,
+                    'not_sure': not_sure})
 
 
 @app.route('/api/load_pdf', methods=['GET'])
