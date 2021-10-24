@@ -9,7 +9,7 @@ def anything2pdf(
     """Конвертер для входных данных в разных форматах
 
     Для работы необходим установленный `LibreOffice`,
-    а так же утилита `unoconv`. Поддерживается куча форматов,
+    а так же утилита `unoserver` (должна быть запущена). Поддерживается куча форматов,
     за большей информацией: `unoconv --show`.
     Если поданный файл и так пдфка, она просто скопируется.
     """
@@ -17,8 +17,8 @@ def anything2pdf(
         output_path.write_bytes(input_path.read_bytes())
         return
     p = run(
-        ['unoconv', '--output', str(output_path), str(input_path)],
-        capture_output=True,
+        f'unoconvert {str(input_path)} {str(output_path)}',
+        capture_output=True, shell=True,
     )
     if p.returncode:
         raise OSError('Работа unoconv завершилась со следующей ошибкой: '
