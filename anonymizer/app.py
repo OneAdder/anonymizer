@@ -23,9 +23,14 @@ PREDICTOR = NewsNER(ROOT_PATH / 'model' / 'model')
 app = Flask(__name__)
 
 
+def requires_validation(tags, ocr_result):
+    return True
+
+
 def run_model(images: List[PpmImagePlugin.PpmImageFile]
-              ) -> List[List[Tuple[int, int, int, int]]]:
+              ) -> Tuple[List[List[Tuple[int, int, int, int]]], bool]:
     coordinates = []
+    tags_list = []
     for i, image in enumerate(images):
         ocr_result = image_to_data(image, output_type=Output.DICT, lang='rus')
         inputs = [word for word in ocr_result['text'] if word.strip()]
@@ -45,7 +50,9 @@ def run_model(images: List[PpmImagePlugin.PpmImageFile]
                     page.append((x, y, x + w, y + h))
                 token_counter += 1
         coordinates.append(page)
-    return coordinates
+        tags_list.append(tags)
+    not_sure = requires_validation(tags_list, len(coordinates))
+    return coordinates, not_sure
 
 
 @app.route('/')
@@ -71,7 +78,7 @@ def anonymize():
     anything2pdf(raw_path, input_path)
     images = convert_from_path(input_path, dpi=PDFHighlighter.DPI)
     try:
-        coordinates = run_model(images)
+        coordinates, not_sure = run_model(images)
     except Exception:
         traceback.print_exc()
         abort(500, 'не удалось произвести обезличивание')
@@ -80,7 +87,9 @@ def anonymize():
     highlighter = PDFHighlighter(
         input_data=images,
         output_path=pdf_path,
-        coordinates=coordinates)
+        coordinates=coordinates,
+        not_sure=not_sure,
+    )
     return jsonify({'filename': highlighter.blurred_pdf.parent.name,
                     'input': input_path.name})
 

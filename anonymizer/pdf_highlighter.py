@@ -1,4 +1,5 @@
 from copy import deepcopy
+from itertools import chain
 from pathlib import Path
 from typing import Iterable, List, Optional, Tuple, Union
 from pdf2image.pdf2image import convert_from_path
@@ -16,13 +17,15 @@ class PDFHighlighter:
     def __init__(self,
                  input_data: Union[Path, List[PpmImagePlugin.PpmImageFile]],
                  output_path: Path,
-                 coordinates: List[List[Tuple[int, int, int, int]]]):
+                 coordinates: List[List[Tuple[int, int, int, int]]],
+                 not_sure: bool = False):
         self._coordinates = coordinates
         self._input_images = convert_from_path(input_data, dpi=self.DPI) \
             if isinstance(input_data, Path) else input_data
         if len(self._coordinates) != len(self._input_images):
             raise ValueError('Количество страниц в PDF не совпадает с '
                              'количеством страниц в поданных координатах')
+        self.requires_validation = not_sure
         self.blurred_images = list(self._highlight(self.BLURRED_COLOUR))
         self.hidden_images = list(self._highlight(self.HIDDEN_COLOUR))
         self.blurred_pdf = output_path / self.BLURRED_FILENAME
