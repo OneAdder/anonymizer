@@ -139,7 +139,6 @@ def anonymize():
     anything2pdf(raw_path, input_path)
     images = convert_from_path(input_path)  #, dpi=PDFHighlighter.DPI)
     try:
-        raise
         coordinates, not_sure = run_model(images)
     except Exception as e:
         traceback.print_exc()
