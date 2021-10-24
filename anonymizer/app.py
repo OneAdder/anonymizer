@@ -3,6 +3,8 @@ import traceback
 from datetime import datetime
 from pathlib import Path
 from typing import List, Tuple
+
+from allennlp.data.dataset_readers.dataset_utils.span_utils import iob1_tags_to_spans
 from flask import abort, jsonify, request, send_file, Flask
 from pdf2image import convert_from_path
 from PIL import PpmImagePlugin
@@ -23,8 +25,32 @@ PREDICTOR = NewsNER(ROOT_PATH / 'model' / 'model')
 app = Flask(__name__)
 
 
-def requires_validation(tags, ocr_result):
-    return True
+def requires_validation(all_tags: List[List[str]], ocr_result: List) -> bool:
+    """
+    Вычисляем reject option -- нужно ли отправлять документ на валидацию.
+    На валидацю отправляются документы по следующим признакам:
+    - длина документа в страницах
+    - число извлеченных сущностей. Мотивация: чем больше сущностей запредиктила модель,
+        тем больше сущностей в документе, тем выше вероятность, что модель ошиблась где-то
+    - число однотокенных сущностей. В документах всегда имена идут полностью или сокращённо,
+        таким образом, наличие однотокенных сущностей свидетельствует об аномалиях OCR,
+        и таким документам нужна верификация
+    """
+    # remove everything except PER
+    all_tags = [[tag if tag.endswith('PER') else 'O' for tag in page_tags] for page_tags in all_tags ]
+    spans = [iob1_tags_to_spans(tags) for tags in all_tags]
+    if not ocr_result:
+        return True
+    if len(ocr_result) >= 7:
+        return True
+    if sum([len(page_spans) for page_spans in spans]) > 20:
+        return True
+    one_token_spans = []
+    for page_spans in spans:
+        one_token_spans.extend([span for span in page_spans if span[1][1] - span[1][0] == 1])
+    if len(one_token_spans) > 20:
+        return True
+    return False
 
 
 def run_model(images: List[PpmImagePlugin.PpmImageFile]
@@ -51,7 +77,7 @@ def run_model(images: List[PpmImagePlugin.PpmImageFile]
                 token_counter += 1
         coordinates.append(page)
         tags_list.append(tags)
-    not_sure = requires_validation(tags_list, len(coordinates))
+    not_sure = requires_validation(tags_list, coordinates)
     return coordinates, not_sure
 
 
