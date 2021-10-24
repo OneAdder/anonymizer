@@ -24,9 +24,9 @@ INPUT_PATH.mkdir(exist_ok=True)
 OUTPUT_PATH = ROOT_PATH / 'OUTPUT'
 OUTPUT_PATH.mkdir(exist_ok=True)
 if not os.environ.get('PRETRAINED_TRANSFORMERS_DIR'):
-    os.environ['PRETRAINED_TRANSFORMERS_DIR'] = str(ROOT_PATH / 'rubert_base_cased')
-PREDICTOR = NewsNER("/media/yaroslav/data/models/anonym_dit/collection3_and_137_dit_docs/")
-# PREDICTOR = NewsNER(ROOT_PATH / 'model' / 'model')
+    os.environ['PRETRAINED_TRANSFORMERS_DIR'] = str(ROOT_PATH / 'pretrained_transformers_dir/rubert')
+# PREDICTOR = NewsNER("/media/yaroslav/data/models/anonym_dit/collection3_and_137_dit_docs/")
+PREDICTOR = NewsNER(ROOT_PATH / 'model' / 'model')
 app = Flask(__name__, static_url_path='', static_folder='front')
 TOKENIZER = ya.Tokenizer()
 
@@ -150,7 +150,7 @@ def anonymize():
     except Exception as e:
         traceback.print_exc()
         warnings.warn(f'Произошла ошибка: {e}')
-        coordinates, not_sure = [[], []], True
+        coordinates, not_sure = [[]] * len(images), True
     pdf_path = OUTPUT_PATH / f'{datetime.now().timestamp()}_{file.filename}'
     pdf_path.mkdir()
     highlighter = PDFHighlighter(
