@@ -8,7 +8,7 @@ else
   listen="$1"
 fi
 echo "Starting webapp on $1"
-venv/bin/gunicorn -w1 -t180 -b "$listen" anonymizer.app:app --access-logfile access-log
+venv/bin/gunicorn -w1 -t720 -b "$listen" anonymizer.app:app --access-logfile access-log
 echo "Stopping webapp"
 pkill gunicorn
 echo "Stopping unoserver"
