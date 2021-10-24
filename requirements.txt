@@ -6,3 +6,4 @@ pdf2image
 Pillow
 gunicorn
 yargy==0.14.0
+numpy==1.19.2

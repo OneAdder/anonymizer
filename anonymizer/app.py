@@ -7,6 +7,7 @@ from typing import List, Tuple
 
 import gc
 import yargy.tokenizer as ya
+import numpy as np
 from allennlp.data.dataset_readers.dataset_utils.span_utils import iob1_tags_to_spans
 from flask import abort, jsonify, request, send_file, Flask
 from pdf2image import convert_from_path
@@ -24,8 +25,8 @@ OUTPUT_PATH = ROOT_PATH / 'OUTPUT'
 OUTPUT_PATH.mkdir(exist_ok=True)
 if not os.environ.get('PRETRAINED_TRANSFORMERS_DIR'):
     os.environ['PRETRAINED_TRANSFORMERS_DIR'] = str(ROOT_PATH / 'rubert_base_cased')
-# PREDICTOR = NewsNER("/media/yaroslav/data/models/anonym_dit/collection3_and_137_dit_docs/")
-PREDICTOR = NewsNER(ROOT_PATH / 'model' / 'model')
+PREDICTOR = NewsNER("/media/yaroslav/data/models/anonym_dit/collection3_and_137_dit_docs/")
+# PREDICTOR = NewsNER(ROOT_PATH / 'model' / 'model')
 app = Flask(__name__, static_url_path='', static_folder='front')
 TOKENIZER = ya.Tokenizer()
 
@@ -34,7 +35,7 @@ def repeat_to_length(string_to_expand: str, length: int) -> str:
     return (string_to_expand * length)[:length]
 
 
-def requires_validation(all_tags: List[List[str]], ocr_result: List) -> bool:
+def requires_validation(all_tags: List[List[str]], ocr_result: List, confidences: List[int]) -> bool:
     """
     Вычисляем reject option -- нужно ли отправлять документ на валидацию.
     На валидацю отправляются документы по следующим признакам:
@@ -52,12 +53,15 @@ def requires_validation(all_tags: List[List[str]], ocr_result: List) -> bool:
         return True
     if len(ocr_result) >= 7:
         return True
-    if sum([len(page_spans) for page_spans in spans]) > 20:
+    if sum([len(page_spans) for page_spans in spans]) > 40:
         return True
     one_token_spans = []
     for page_spans in spans:
         one_token_spans.extend([span for span in page_spans if span[1][1] - span[1][0] == 0])
     if len(one_token_spans) > 20:
+        return True
+    cleaned_confs = [i for i in confidences if isinstance(i, int)]
+    if np.array(cleaned_confs).mean() < 70:
         return True
     return False
 
@@ -94,6 +98,7 @@ def run_model(images: List[PpmImagePlugin.PpmImageFile]
               ) -> Tuple[List[List[Tuple[int, int, int, int]]], bool]:
     coordinates = []
     tags_list = []
+    confidences = []
     for i, image in enumerate(images):
         ocr_result = image_to_data(image, output_type=Output.DICT, lang='rus')
         inputs = [word.strip() for word in ocr_result['text'] if word.strip()]
@@ -104,6 +109,7 @@ def run_model(images: List[PpmImagePlugin.PpmImageFile]
         assert len(inputs) == len(original_anonymized_tokens)
         equals = [before == after for before, after in zip(inputs, original_anonymized_tokens)]
         token_counter = 0
+        confidences.extend(ocr_result['conf'])
         page = []
         for j, word in enumerate(ocr_result['text']):
             (x, y, w, h) = (
@@ -118,7 +124,7 @@ def run_model(images: List[PpmImagePlugin.PpmImageFile]
                 token_counter += 1
         coordinates.append(page)
         tags_list.append(tags)
-    not_sure = requires_validation(tags_list, coordinates)
+    not_sure = requires_validation(tags_list, coordinates, confidences)
     return coordinates, not_sure
 
 
