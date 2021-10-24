@@ -81,21 +81,27 @@ def anonymize():
         input_data=images,
         output_path=pdf_path,
         coordinates=coordinates)
-    return jsonify({'filename': highlighter.blurred_pdf.parent.name})
+    return jsonify({'filename': highlighter.blurred_pdf.parent.name,
+                    'input': input_path.name})
 
 
 @app.route('/api/load_pdf', methods=['GET'])
 def load_pdf():
     name = request.args.get('name')
     hidden = request.args.get('hidden')
+    raw = request.args.get('raw')
     if not name:
         abort(405, 'В запросе не подано имя файла ("name")')
-    file_path = OUTPUT_PATH / name
+    file_path = INPUT_PATH / name if raw else OUTPUT_PATH / name
     if not file_path.exists():
         abort(404, f'Нет такого файла {name}')
-    filename = PDFHighlighter.HIDDEN_FILENAME \
-        if hidden else PDFHighlighter.BLURRED_FILENAME
-    return send_file(file_path / filename)
+    if raw:
+        filename = file_path
+    elif hidden:
+        filename = file_path / PDFHighlighter.HIDDEN_FILENAME
+    else:
+        filename = file_path / PDFHighlighter.BLURRED_FILENAME
+    return send_file(filename)
 
 
 @app.route('/api/list_pdf', methods=['GET'])
