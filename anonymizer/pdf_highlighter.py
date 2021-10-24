@@ -25,7 +25,6 @@ class PDFHighlighter:
         if len(self._coordinates) != len(self._input_images):
             raise ValueError('Количество страниц в PDF не совпадает с '
                              'количеством страниц в поданных координатах')
-        self.requires_validation = not_sure
         self.blurred_images = list(self._highlight(self.BLURRED_COLOUR))
         self.hidden_images = list(self._highlight(self.HIDDEN_COLOUR))
         self.blurred_pdf = output_path / self.BLURRED_FILENAME

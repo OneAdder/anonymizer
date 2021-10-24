@@ -22,7 +22,7 @@ OUTPUT_PATH.mkdir(exist_ok=True)
 if not os.environ.get('PRETRAINED_TRANSFORMERS_DIR'):
     os.environ['PRETRAINED_TRANSFORMERS_DIR'] = str(ROOT_PATH / 'rubert_base_cased')
 PREDICTOR = NewsNER(ROOT_PATH / 'model' / 'model')
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='front')
 
 
 def requires_validation(all_tags: List[List[str]], ocr_result: List) -> bool:
@@ -83,12 +83,7 @@ def run_model(images: List[PpmImagePlugin.PpmImageFile]
 
 @app.route('/')
 def index():
-    api = '/ -- описание апи<br>' \
-          '/api/anonymize -- обезличивание, постовая ручка, принимает запрос с файлом (pdf и все форматы либроффиса)<br>' \
-          '/api/list_pdfs -- гетовая ручка, список обезличенных пдфок, без параметров<br>' \
-          '/api/load_pdf -- гетовая ручка, два параметра: имя файла (как из ручки выше) и параметр hidden,' \
-          '\t если он задан, то отдам пдфку с полностью закрашенными с сущностями, если нет, то наполовину (обе нужны для демо)'
-    return api
+    return (ROOT_PATH / 'anonymizer' / 'front' / 'index.html').read_text()
 
 
 @app.route('/api/anonymize', methods=['POST'])
@@ -117,7 +112,8 @@ def anonymize():
         not_sure=not_sure,
     )
     return jsonify({'filename': highlighter.blurred_pdf.parent.name,
-                    'input': input_path.name})
+                    'input': input_path.name,
+                    'not_sure': not_sure})
 
 
 @app.route('/api/load_pdf', methods=['GET'])
