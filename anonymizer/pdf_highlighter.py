@@ -3,7 +3,7 @@ from itertools import chain
 from pathlib import Path
 from typing import Iterable, List, Optional, Tuple, Union
 from pdf2image.pdf2image import convert_from_path
-from PIL import ImageDraw, PpmImagePlugin
+from PIL import ImageDraw, ImageFont, PpmImagePlugin
 
 
 class PDFHighlighter:
@@ -38,6 +38,9 @@ class PDFHighlighter:
         for page_image, page_coordinates in zip(deepcopy(self._input_images),
                                                 self._coordinates):
             canvas = ImageDraw.Draw(page_image, 'RGBA')
+            if self.requires_validation:
+                font = ImageFont.truetype("arial.ttf", 64)
+                canvas.text((50, 90), "ТРЕБУЕТСЯ ВАЛИДАЦИЯ ЧЕЛОВЕКОМ", (255, 0, 0), font=font)
             for coordinates in page_coordinates:
                 canvas.rectangle(coordinates, fill=colour)
             yield page_image
