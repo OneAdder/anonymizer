@@ -4,3 +4,4 @@ pytesseract
 flask
 pdf2image
 Pillow
+gunicorn
