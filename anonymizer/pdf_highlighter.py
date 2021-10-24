@@ -7,7 +7,7 @@ from PIL import ImageDraw, PpmImagePlugin
 
 
 class PDFHighlighter:
-    DPI = 300
+    DPI = 200
     BLURRED_COLOUR = (0, 255, 0, 64)
     HIDDEN_COLOUR = (0, 0, 0, 255)
 
