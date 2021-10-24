@@ -1,5 +1,6 @@
 import os
 import traceback
+import warnings
 from datetime import datetime
 from pathlib import Path
 from typing import List, Tuple
@@ -100,9 +101,10 @@ def anonymize():
     images = convert_from_path(input_path, dpi=PDFHighlighter.DPI)
     try:
         coordinates, not_sure = run_model(images)
-    except Exception:
+    except Exception as e:
         traceback.print_exc()
-        abort(500, 'не удалось произвести обезличивание')
+        warnings.warn(f'Произошла ошибка: {e}')
+        coordinates, not_sure = [[], []], True
     pdf_path = OUTPUT_PATH / f'{datetime.now().timestamp()}_{file.filename}'
     pdf_path.mkdir()
     highlighter = PDFHighlighter(
