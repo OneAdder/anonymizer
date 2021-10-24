@@ -50,10 +50,15 @@ def run_model(images: List[PpmImagePlugin.PpmImageFile]
 
 @app.route('/')
 def sdf():
-    return 'Артём, привет'
+    api = '/ -- описание апи<br>' \
+          '/api/anonymize -- обезличивание, постовая ручка, принимает запрос с файлом (pdf и все форматы либроффиса)<br>' \
+          '/api/list_pdfs -- гетовая ручка, список обезличенных пдфок, без параметров<br>' \
+          '/api/load_pdf -- гетовая ручка, два параметра: имя файла (как из ручки выше) и параметр hidden,' \
+          '\t если он задан, то отдам пдфку с полностью закрашенными с сущностями, если нет, то наполовину (обе нужны для демо)'
+    return api
 
 
-@app.route('/anonymize', methods=['POST'])
+@app.route('/api/anonymize', methods=['POST'])
 def anonymize():
     if 'file' not in request.files:
         abort(400, 'Поля `file` нет в реквесте')
@@ -76,12 +81,10 @@ def anonymize():
         input_data=images,
         output_path=pdf_path,
         coordinates=coordinates)
-    return jsonify({'blurred': str(highlighter.blurred_pdf),
-                    'hidden': str(highlighter.hidden_pdf),
-                    })
+    return jsonify({'filename': highlighter.blurred_pdf.parent.name})
 
 
-@app.route('/load_pdf', methods=['GET'])
+@app.route('/api/load_pdf', methods=['GET'])
 def load_pdf():
     name = request.args.get('name')
     hidden = request.args.get('hidden')
@@ -95,7 +98,7 @@ def load_pdf():
     return send_file(file_path / filename)
 
 
-@app.route('/list_pdf', methods=['GET'])
+@app.route('/api/list_pdf', methods=['GET'])
 def list_pdf():
     return jsonify(os.listdir(OUTPUT_PATH))
 
