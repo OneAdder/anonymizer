@@ -221,6 +221,7 @@ class LongSequencePredictor(Predictor):
                 start = start + self._overlap
         return instances
 
+
 class NewsNER:
 
     def __init__(self, path, device: str = "cpu", n_iterations: int =1):
