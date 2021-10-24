@@ -17,10 +17,10 @@ def anything2pdf(
         output_path.write_bytes(input_path.read_bytes())
         return
     p = run(
-        f'unoconvert {str(input_path)} {str(output_path)}',
-        capture_output=True, shell=True,
+        ['unoconvert', str(input_path), str(output_path)],
+        capture_output=True,
     )
     if p.returncode:
-        raise OSError('Работа unoconv завершилась со следующей ошибкой: '
+        raise OSError('Работа unoconvert завершилась со следующей ошибкой: '
                       f'{p.stderr.decode("utf-8")}')
     return p
