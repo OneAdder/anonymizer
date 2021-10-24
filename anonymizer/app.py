@@ -21,7 +21,7 @@ INPUT_PATH.mkdir(exist_ok=True)
 OUTPUT_PATH = ROOT_PATH / 'OUTPUT'
 OUTPUT_PATH.mkdir(exist_ok=True)
 if not os.environ.get('PRETRAINED_TRANSFORMERS_DIR'):
-    os.environ['PRETRAINED_TRANSFORMERS_DIR'] = str(ROOT_PATH / 'rubert_base_cased')
+    os.environ['PRETRAINED_TRANSFORMERS_DIR'] = str(ROOT_PATH / 'pretrained_transformers_dir/rubert')
 PREDICTOR = NewsNER(ROOT_PATH / 'model' / 'model')
 app = Flask(__name__, static_url_path='', static_folder='front')
 
