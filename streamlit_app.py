@@ -6,6 +6,7 @@ import tempfile
 
 import cv2
 import numpy
+from allennlp.data.dataset_readers.dataset_utils.span_utils import iob1_tags_to_spans
 from fpdf import FPDF
 
 import streamlit as st
@@ -63,6 +64,8 @@ if file:
         progress_bar.progress(n_steps)
         inputs = [word for word in ocr_result['text'] if word.strip()]  # exclude top-level bboxes
         tags = predictor.predict(inputs)
+        spans = iob1_tags_to_spans(tags)
+        n_extracted_entities = len([span for span in spans if span[0] == 'PER'])
         # print('hello anonymizer')
         counter += n_steps
         progress_bar.progress(n_steps)
