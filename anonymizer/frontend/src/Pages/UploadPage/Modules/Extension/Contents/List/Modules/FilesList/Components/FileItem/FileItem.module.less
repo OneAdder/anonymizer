@@ -1,0 +1,45 @@
+.content {
+    border-bottom: 1px solid #597696;
+    padding-bottom: 8px;
+}
+.title {
+    font-size: 16px;
+    line-height: 24px;
+    margin-bottom: 8px;
+    color: #3B4E63;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.label {
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 24px;
+    color: #597696;
+}
+.row {
+    margin-bottom: 8px;
+}
+.wrapper {
+
+    padding-top: 24px;
+    &:hover {
+        background: #fff;
+        cursor: pointer;
+    }
+    &Disabled {
+        &:hover {
+            cursor: default;
+            background: transparent;
+        }
+    }
+    &Active {
+        background: #fff;
+        .title {
+            color: #F0883F;
+        }
+        .content {
+            border: unset;
+        }
+    }
+}

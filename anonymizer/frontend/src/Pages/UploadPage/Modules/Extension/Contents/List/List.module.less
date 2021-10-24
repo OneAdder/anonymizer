@@ -1,0 +1,31 @@
+.uploadBtn {
+    text-align: left;
+    margin-top: 20px;
+    display: flex;
+    &Icon {
+        font-size: 24px;
+        margin-right: 12px;
+        display: flex;
+    }
+    &Content {
+        display: flex;
+        align-items: center;
+        text-decoration: underline;
+        color: #597696;
+    }
+    :global {
+        .ant-upload {
+            &.ant-upload-drag {
+                background: transparent;
+                text-align: left;
+                border: unset;
+                .ant-upload-btn {
+                    padding: 0;
+                }
+            }
+        }
+    }
+}
+.filesList {
+    margin-top: 32px;
+}

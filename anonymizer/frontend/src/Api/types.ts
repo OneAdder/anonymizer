@@ -1,0 +1,1 @@
+export type {iAnonimize} from './Anonimize/types';

@@ -1,0 +1,29 @@
+.icon {
+    font-size: 32px;
+    display: flex;
+}
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 4px;
+    transition: background 0.2s ease-in-out;
+    position: relative;
+    &Active {
+        background: #F8FAFC;
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0px;
+            width: 6px;
+            height: 70%;
+            background: #5196EF;
+            transform: translate(-50%, -50%);
+            border-radius: 6px;
+        }
+    }
+    &:hover {
+        background: #F8FAFC;
+    }
+}
