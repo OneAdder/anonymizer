@@ -49,7 +49,7 @@ def run_model(images: List[PpmImagePlugin.PpmImageFile]
 
 
 @app.route('/')
-def sdf():
+def index():
     api = '/ -- описание апи<br>' \
           '/api/anonymize -- обезличивание, постовая ручка, принимает запрос с файлом (pdf и все форматы либроффиса)<br>' \
           '/api/list_pdfs -- гетовая ручка, список обезличенных пдфок, без параметров<br>' \
