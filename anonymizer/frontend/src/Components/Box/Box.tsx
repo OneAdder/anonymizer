@@ -7,12 +7,12 @@ type iBox = {
 }
 
 const Box = (props: iBox) => {
-    if (!props.visible) return null
+    if (!props.visible) return null;
     return (
         <>
             {props.children}
         </>
-    )
-}
+    );
+};
 
 export default Box;

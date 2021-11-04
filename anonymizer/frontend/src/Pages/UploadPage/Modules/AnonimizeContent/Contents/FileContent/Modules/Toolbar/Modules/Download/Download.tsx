@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button} from 'antd';
+import {Button} from '@root/Components/Controls';
 import {DownloadOutlined} from '@ant-design/icons';
 import {useActiveUrl} from '../../../../../../Hooks/useActiveUrl';
 
@@ -12,12 +12,13 @@ const Download = () => {
             href={url}
             download>
             <Button 
+                color="orange"
                 icon={<DownloadOutlined />}
                 type="primary">
                 Скачать
             </Button>
         </a>
-    )
-}
+    );
+};
 
 export default Download;

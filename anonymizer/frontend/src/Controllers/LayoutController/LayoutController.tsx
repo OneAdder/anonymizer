@@ -11,7 +11,7 @@ const LayoutController = (props: iLayoutController) => {
         <LkLayout>
             {props.children}
         </LkLayout>
-    )
-}
+    );
+};
 
 export default LayoutController;

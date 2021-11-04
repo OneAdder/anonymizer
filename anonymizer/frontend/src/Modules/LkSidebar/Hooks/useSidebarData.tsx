@@ -17,7 +17,7 @@ export const useSidebarData = () => {
             ],
             desc: 'Работа с документами'
         }
-    ]
+    ];
     return data.map((item) => {
         item.active = Boolean(
             matchPath(location.pathname, {
@@ -26,6 +26,6 @@ export const useSidebarData = () => {
             })
         );
         return item;
-    })
-}
+    });
+};
 

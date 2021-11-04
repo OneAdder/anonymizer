@@ -7,8 +7,8 @@ const AnonimizeContent = () => {
         <div className={styles.wrapper}>
             <ContentController />
         </div>
-    )
-}
+    );
+};
 
 
 export default AnonimizeContent;

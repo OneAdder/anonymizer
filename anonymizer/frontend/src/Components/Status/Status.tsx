@@ -18,14 +18,14 @@ const Status = (props: iStatus) => {
                 [styles.dotRed]: props.color === 'red',
             }
         )
-    }
+    };
     return (
         <div className={styles.wrapper}>
             <div className={classes.dot} />
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 
 export default Status;

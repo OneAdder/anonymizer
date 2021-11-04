@@ -20,7 +20,7 @@ const RoutesController = () => {
                 <NotFound />
             </Route>
         </Switch>
-    )
-}
+    );
+};
 
 export default RoutesController;

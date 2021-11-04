@@ -32,13 +32,13 @@ const LkLayout = (props: iLkLayout) => {
                 </Content>
             </Layout>
         </Wrapper>
-    )
-}
+    );
+};
 
 LkLayout.defaultProps = {
     header: <HeaderModule />,
     sider: <LkSidebar />
-}
+};
 
 
 export default LkLayout;

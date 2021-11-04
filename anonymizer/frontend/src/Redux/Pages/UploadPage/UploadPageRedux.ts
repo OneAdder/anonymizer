@@ -1,7 +1,7 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {iActions, iState} from './types';
 import {getFullState, requestStart, requestSuccess, requestError} from '@root/Utils/Redux/requestState/getRequestState';
-import {getFileID} from '@utils/Files/getFileId'
+import {getFileID} from '@utils/Files/getFileId';
 import moment from 'moment';
 
 
@@ -15,7 +15,7 @@ const initialState:iState.Value = {
             data: {
                 filename:"1636053420.725758_cv.pdf",
                 input:"1636053412.614628_cv.pdf.pdf",
-                not_sure:false
+                not_sure: true
             },
             file: {
                 date:"2021-11-04T19:16:52.275Z",
@@ -28,7 +28,7 @@ const initialState:iState.Value = {
         }
     },
     activeFile: null
-}
+};
 
 const Slice = createSlice({
     name:'Pages/UploadPage',
@@ -42,14 +42,14 @@ const Slice = createSlice({
                     ...getFullState(),
                     file: null,
                     mode: 'after'
-                }
+                };
                 state.files[id].file = {
                     date: moment().toISOString(),
                     name: file.name,
                     size: file.size,
                     status: 'loading',
                     uid: id
-                }
+                };
             }
             requestStart(state.files[id]);
         },
@@ -71,7 +71,7 @@ const Slice = createSlice({
             if (!(id in state.files)) {
                 return state;
             }
-            requestError(state.files[id])
+            requestError(state.files[id]);
             const file = state.files[id].file;
             if (!file) return state;
             file.status = 'error';
@@ -87,6 +87,6 @@ const Slice = createSlice({
             file.mode = mode;
         }
     }
-})
+});
 
 export default Slice;

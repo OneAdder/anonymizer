@@ -23,7 +23,7 @@ const SidebarItem = (props: iSidebarItemProps) => {
                 [styles.wrapperActive]: item.active
             }
         )
-    }
+    };
     return (
         <Link to={url}>
             <div className={classes.wrapper}>
@@ -32,7 +32,7 @@ const SidebarItem = (props: iSidebarItemProps) => {
                 </div>
             </div>
         </Link>
-    )
-}
+    );
+};
 
-export default SidebarItem
+export default SidebarItem;

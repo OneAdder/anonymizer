@@ -15,7 +15,6 @@ const FileContent = () => {
             renderMode="canvas"
             className={styles.document}
             onLoadSuccess={(data) => {
-                console.log(data);
                 setPages(data.numPages);
             }}
             file={url}>

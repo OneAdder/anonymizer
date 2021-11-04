@@ -9,7 +9,7 @@ const NoChoosen = () => {
             title="Выберите документ"
             desc="Вы не выбрали документ для обезличивания"
         /> 
-    )
-}
+    );
+};
 
 export default NoChoosen;

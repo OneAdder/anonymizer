@@ -8,6 +8,6 @@ const Extension = () => {
     const data = useFileList();
     if (!data.length) return <Empty />;
     else return <List />;
-}
+};
 
 export default Extension;

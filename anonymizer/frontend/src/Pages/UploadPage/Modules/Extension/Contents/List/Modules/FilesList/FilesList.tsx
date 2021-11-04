@@ -26,11 +26,11 @@ const FilesList = () => {
                             key={index}
                             item={item.file}
                         />
-                    )
+                    );
                 })}
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default FilesList;

@@ -15,8 +15,8 @@ const CustomLayout = (props: LayoutProps) => {
                 styles.layout
             )
         }
-    )
-}
+    );
+};
 
 const CustomHeader = (props: BasicProps) => {
     return React.createElement(
@@ -28,8 +28,8 @@ const CustomHeader = (props: BasicProps) => {
                 styles.header
             )
         }
-    )
-}
+    );
+};
 const CustomContent = (props: BasicProps) => {
     return React.createElement(
         Layout.Content,
@@ -40,8 +40,8 @@ const CustomContent = (props: BasicProps) => {
                 styles.content
             )
         }
-    )
-}
+    );
+};
 const CustomSider = (props: SiderProps) => {
     return React.createElement(
         Layout.Sider,
@@ -53,8 +53,8 @@ const CustomSider = (props: SiderProps) => {
                 styles.sider
             )
         }
-    )
-}
+    );
+};
 
 const LayoutWrapper = (props: BasicProps) => {
     return React.createElement(
@@ -66,8 +66,8 @@ const LayoutWrapper = (props: BasicProps) => {
                 styles.wrapper
             )
         }
-    )
-}
+    );
+};
 
 CustomLayout.Header = CustomHeader;
 CustomLayout.Content = CustomContent;

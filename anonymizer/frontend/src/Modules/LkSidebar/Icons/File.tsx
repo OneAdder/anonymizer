@@ -8,7 +8,7 @@ const FileIcon = () => {
             <path opacity="0.4" d="M19.0456 20.7437H11.8496" stroke="#5196EF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             <path opacity="0.4" d="M16.3233 14.1406H11.8486" stroke="#5196EF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-    )
-}
+    );
+};
 
 export default FileIcon;

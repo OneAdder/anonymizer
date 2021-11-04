@@ -26,13 +26,13 @@ const FileItem = (props: iFileItem) => {
                 [styles.wrapperDisabled]: props.item.status !== 'success'
             }
         )
-    }
+    };
 
     return (
         <div 
             onClick={() => {
                 if (item.status !== 'success') return;
-                dispatch(Actions.Pages.UploadPage.setActiveFile(item.uid))
+                dispatch(Actions.Pages.UploadPage.setActiveFile(item.uid));
             }}
             className={classes.wrapper}>
             <PaddingContainer>
@@ -75,7 +75,7 @@ const FileItem = (props: iFileItem) => {
                 </div>
             </PaddingContainer>
         </div>
-    )
-}
+    );
+};
 
 export default FileItem;

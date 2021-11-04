@@ -13,7 +13,7 @@ const UploadPage = () => {
                 <AnonimizeContent />
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default UploadPage;

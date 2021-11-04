@@ -1,0 +1,36 @@
+
+
+.primaryType(@color) {
+    background: @color;
+    border-color: @color;
+    color: #fff;
+}
+.defaultType(@color) {
+    background: transparent;
+    border-color: @color;
+    color: @color;
+}
+
+
+.btn {
+    &:global {
+        &.ant-btn {
+            border-radius: 4px;
+            box-shadow: unset;
+        }
+    }
+    &Blue {
+        &:global {
+            &.ant-btn-primary {
+                .primaryType(@secound-color);
+            }
+        }
+    }
+    &ColorDefault {
+        &:global {
+            &.ant-btn-default {
+                .defaultType(@secound-color);
+            }   
+        }
+    }
+}

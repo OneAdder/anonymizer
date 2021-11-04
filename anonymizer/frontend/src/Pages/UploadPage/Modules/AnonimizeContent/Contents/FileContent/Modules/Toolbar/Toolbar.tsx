@@ -1,17 +1,15 @@
 import React from 'react';
 import styles from './Toolbar.module.less';
 import {useActiveFile} from '../../../../../../Hooks/useActiveFile';
-import {Row, Col, Radio, Tooltip} from 'antd';
-import Actions from '@actions';
+import {Row, Col, Tooltip} from 'antd';
 import classnames from 'classnames';
-import {useDispatch} from 'react-redux';
 import Download from './Modules/Download/Download';
 import Box from '@root/Components/Box/Box';
 import Status from '@root/Components/Status/Status';
+import ChangesMode from './Modules/ChangesMode/ChangesMode';
 
 const Toolbar = () => {
     const activeFile = useActiveFile();
-    const dispatch = useDispatch();
     if (!activeFile) return null;
     if (!activeFile.file) return null;
 
@@ -29,25 +27,7 @@ const Toolbar = () => {
                     <div className={styles.changesLabel}>
                         Изменения: 
                     </div>
-                    <Radio.Group 
-                        size="small"
-                        onChange={(event) => {
-                            const {target} = event;
-                            const {value} = target;
-                            if (!activeFile.file?.uid) return;
-                            dispatch(Actions.Pages.UploadPage.changeMode({
-                                id: activeFile.file.uid,
-                                mode: value 
-                            }))
-                        }}
-                        value={activeFile.mode}>
-                        <Radio.Button value="until">
-                            Было
-                        </Radio.Button>
-                        <Radio.Button value="after">
-                            Стало
-                        </Radio.Button>
-                    </Radio.Group>
+                    <ChangesMode />
                 </Col>
                 <Col span={4}>
                     <Box visible={Boolean(activeFile.data?.not_sure)}>
@@ -74,7 +54,7 @@ const Toolbar = () => {
             
             
         </div>
-    )
-}
+    );
+};
 
 export default Toolbar;

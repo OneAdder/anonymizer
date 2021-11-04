@@ -1,8 +1,8 @@
 import Actions from '@actions';
 import {put, takeEvery, call} from 'redux-saga/effects';
 import {PayloadAction} from '@reduxjs/toolkit';
-import {iActions} from '@redux/Pages/UploadPage/types'
-import Api from '@api'
+import {iActions} from '@redux/Pages/UploadPage/types';
+import Api from '@api';
 
 
 const AnonimizeFile = function* (action: PayloadAction<iActions.uploadFile>) {
@@ -15,7 +15,7 @@ const AnonimizeFile = function* (action: PayloadAction<iActions.uploadFile>) {
     } catch (ex) {
         yield put(Actions.Pages.UploadPage._uploadFileError(action.payload));
     }
-}
+};
 
 
 export default function*() {

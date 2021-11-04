@@ -10,41 +10,41 @@ type iFileStatus = {
 const textMapper = (status: iFiles.Status) =>  {
     switch (status) {
         case 'error':
-            return 'Ошибка обработки файла'
+            return 'Ошибка обработки файла';
         case 'success':
-            return 'Анонимизирован'
+            return 'Анонимизирован';
         case 'loading':
-            return 'Загрузка...'
+            return 'Загрузка...';
         default:
-            return 'Неизвестно'
+            return 'Неизвестно';
     }
-}
+};
 
 const toolTipMapper = (status: iFiles.Status) => {
     switch (status) {
         case 'error':
-            return 'Анонимизация для данного файла не доступна'
+            return 'Анонимизация для данного файла не доступна';
         case 'success':
-            return 'Документ анонимизирован и доступен к просмотру'
+            return 'Документ анонимизирован и доступен к просмотру';
         case 'loading':
-            return 'Выполняется анонимизация файла'
+            return 'Выполняется анонимизация файла';
         default:
-            return 'Неизвестно'
+            return 'Неизвестно';
     }
-}
+};
 
 const colorMapper = (status: iFiles.Status) => {
     switch (status) {
         case 'error':
-            return 'red'
+            return 'red';
         case 'success':
-            return 'green'
+            return 'green';
         case 'loading':
-            return 'yellow'
+            return 'yellow';
         default:
-            return 'yellow'
+            return 'yellow';
     }
-}
+};
 
 
 const FileStatus = (props: iFileStatus) => {
@@ -58,7 +58,7 @@ const FileStatus = (props: iFileStatus) => {
                 </div>
             </Tooltip>
         </div>
-    )
-}
+    );
+};
 
-export default FileStatus
+export default FileStatus;

@@ -20,8 +20,8 @@ const EmptyContent = () => {
                 </>
             </UploadWrapper>
         </div>
-    )
-}
+    );
+};
 
 
 export default EmptyContent;

@@ -15,7 +15,7 @@ const NoChooseImg = () => {
                 </clipPath>
             </defs>
         </svg>
-    )
-}
+    );
+};
 
 export default NoChooseImg;

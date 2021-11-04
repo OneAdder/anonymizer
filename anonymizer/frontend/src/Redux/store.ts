@@ -1,7 +1,7 @@
 import {configureStore} from '@reduxjs/toolkit';
 import rootReducer from './rootReducer';
 import createSagas from 'redux-saga';
-import rootSaga from '@root/Saga/rootSaga'
+import rootSaga from '@root/Saga/rootSaga';
 
 
 const sagaMiddleware = createSagas();
@@ -13,7 +13,7 @@ const store = configureStore({
             thunk: false,
             serializableCheck: false
         })
-            .concat(sagaMiddleware)
+            .concat(sagaMiddleware);
     } 
 });
 sagaMiddleware.run(rootSaga);

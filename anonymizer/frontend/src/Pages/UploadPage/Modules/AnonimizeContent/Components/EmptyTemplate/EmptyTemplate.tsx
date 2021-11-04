@@ -22,8 +22,8 @@ const EmptyTemplate = (props: iEmptyTemplate) => {
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
 
 export default EmptyTemplate;

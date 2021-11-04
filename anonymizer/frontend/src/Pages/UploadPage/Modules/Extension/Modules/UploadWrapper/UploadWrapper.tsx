@@ -18,13 +18,13 @@ const UploadWrapper = (props: iUploadWrapper) => {
                 if (index === list.length - 1) {
                     list.forEach((item) => {
                         dispatch(Actions.Pages.UploadPage.uploadFile(item));
-                    })
+                    });
                 }
                 return false;
             }}>
             {props.children}
         </Upload.Dragger>
-    )
-}
+    );
+};
 
 export default UploadWrapper;

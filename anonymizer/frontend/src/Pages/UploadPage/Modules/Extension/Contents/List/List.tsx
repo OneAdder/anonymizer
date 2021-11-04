@@ -24,7 +24,7 @@ const List = () => {
                 <FilesList />
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default List;

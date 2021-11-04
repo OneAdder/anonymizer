@@ -25,7 +25,7 @@ const LkSidebar = () => {
                 ))
             }
         </div>
-    )
-}
+    );
+};
 
 export default LkSidebar;

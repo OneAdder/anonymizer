@@ -9,4 +9,4 @@ export const getFileSize = (size: number) => {
         index = index + 1;
     }
     return `${localSize.toFixed(1)} ${postfix[index]}`;
-}
+};

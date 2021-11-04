@@ -11,7 +11,7 @@ const PaddingContainer = (props: iPaddingContainer) => {
         <div className={styles.wrapper}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export default PaddingContainer;
