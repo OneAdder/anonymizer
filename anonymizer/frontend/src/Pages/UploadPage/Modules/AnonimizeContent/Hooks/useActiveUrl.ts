@@ -1,6 +1,6 @@
 import {useMemo} from 'react';
 import Api from '@api';
-import {useActiveFile} from '../../../Hooks/useActiveFile'
+import {useActiveFile} from '../../../Hooks/useActiveFile';
 
 
 export const useActiveUrl = () => {
@@ -12,12 +12,12 @@ export const useActiveUrl = () => {
             return Api.Anonimize.download({
                 name: activeFile.data.filename,
                 hidden: true
-            })
+            });
         } else {
             return Api.Anonimize.download({
                 name: activeFile.data.filename,
-            })
+            });
         }
     }, [activeFile]);
-    return url
+    return url;
 };

@@ -1,12 +1,16 @@
-.pdfContent {
-    flex-grow: 1;
-}
 .page {
     margin-top: 40px;
+    &:first-child {
+        margin-top: 0;
+    }
     :global {
         .react-pdf__Page__svg,
         .react-pdf__Page__canvas {
             margin: auto;
         }
     }
+}
+.document {
+    padding-top: 40px;
+    padding-bottom: 40px;
 }

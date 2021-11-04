@@ -51,10 +51,7 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ],
+    "extends": [],
     "env": {
       "browser": true,
       "es6": true,
@@ -75,6 +72,9 @@
         "version": "detect",
         "flowVersion": "0.53"
       }
+    },
+    "rules": {
+        "semi": "warn"
     }
   },
   "browserslist": {

@@ -85,7 +85,7 @@ module.exports = {
             proxy: [
                 {
                     context: ['/api/'],
-                    target: 'http://deepdocs.ru/',
+                    target: 'https://deepdocs.ru/',
                     changeOrigin: true,
                     logLevel: proxyLog
                 },

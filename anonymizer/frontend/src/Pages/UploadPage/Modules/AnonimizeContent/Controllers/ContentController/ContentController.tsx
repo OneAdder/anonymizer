@@ -12,12 +12,11 @@ const ContentController = () => {
     const activeFileName = useSelector((state:AppState) => state.Pages.UploadPage.activeFile);
     const activeFile = useActiveFile();
 
-
     if (!files.length) return <NoData />;
     if (!activeFileName) return <NoChoosen />;
     if (activeFile) return <FileContent />;
     return null;
-}
+};
 
 
 

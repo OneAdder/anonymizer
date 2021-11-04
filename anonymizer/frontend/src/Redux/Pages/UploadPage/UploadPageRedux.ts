@@ -6,7 +6,27 @@ import moment from 'moment';
 
 
 const initialState:iState.Value = {
-    files: {},
+    files: {
+        "NTg3NDc5YXBwbGljYXRpb24vcGRmMTYzNTA4ODQyNDYwNg==": {
+            errMsg:"",
+            error: false,
+            fetching: false,
+            loaded: true,
+            data: {
+                filename:"1636053420.725758_cv.pdf",
+                input:"1636053412.614628_cv.pdf.pdf",
+                not_sure:false
+            },
+            file: {
+                date:"2021-11-04T19:16:52.275Z",
+                name:"cv.pdf",
+                size:587479,
+                status:"success",
+                uid:"NTg3NDc5YXBwbGljYXRpb24vcGRmMTYzNTA4ODQyNDYwNg=="
+            },
+            mode: 'after'
+        }
+    },
     activeFile: null
 }
 
