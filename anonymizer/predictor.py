@@ -266,7 +266,7 @@ class NewsNER:
                 start += self._token_window
             else:
                 start = start + self._overlap
-        result = self.predictor._inner_predict(instances, ' '.join([token.text for token in tokens]))
+        result = self.predictor.inner_predict(instances)
         simplified_predictions: List[str] = [
             tag.strip() for tag in result['tags']
         ]

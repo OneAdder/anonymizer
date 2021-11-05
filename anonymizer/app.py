@@ -76,24 +76,41 @@ def build_input_to_model(inputs: List[str]) -> List[List]:
 def anonymize_tokens(model_inputs: List[List], predictions: List[str]) -> List[str]:
     new_tokens = []
     for token, tag in zip(model_inputs, predictions):
-        if tag.endswith('PER'):
-            new_tokens.append(repeat_to_length(tag, len(token[0])))
+        if tag != 'O':
+            new_tokens.append(repeat_to_length(tag[2:], len(token[0])))
         else:
             new_tokens.append(token[0])
     return new_tokens
 
 
-def build_anonymized_tokens(real_inputs, model_inputs: List[List], new_tokens: List[str]) -> List[str]:
+def build_anonymized_tokens(real_inputs, model_inputs: List[List], new_tokens: List[str]) -> Tuple[List[str], List[str]]:
     orig_length = len(' '.join(real_inputs))
     anonymized = [' '] * orig_length
+    # for multi-label anonymization we need to retain information which labels
+    # correspond to which `tesseract` tokens
+    labels = [' '] * orig_length
     for value, token_info in zip(new_tokens, model_inputs):
         anonymized[token_info[1]:token_info[2]] = list(value)
+        # for PER label, we will have 'P'
+        labels[token_info[1]:token_info[2]] = [value[0] if char else ' ' for char in value]
     new_tesseract_tokens = ''.join(anonymized).split(' ')
-    return new_tesseract_tokens
+    labels = ''.join(labels).split(' ')
+    return new_tesseract_tokens, labels
+
+
+def get_original_label(label: str) -> str:
+    if label.startswith('P'):
+        return 'PER'
+    elif label.startswith('L'):
+        return 'LOC'
+    elif label.startswith('O'):
+        return 'ORG'
+    else:
+        return ''
 
 
 def run_model(images: List[PpmImagePlugin.PpmImageFile]
-              ) -> Tuple[List[List[Tuple[int, int, int, int]]], bool, Dict[str, Any]]:
+              ) -> Tuple[List[List[Tuple[Tuple[int, int, int, int], str]]], bool, Dict[str, Any]]:
     coordinates = []
     tags_list = []
     confidences = []
@@ -103,7 +120,7 @@ def run_model(images: List[PpmImagePlugin.PpmImageFile]
         model_inputs = build_input_to_model(inputs)
         tags = PREDICTOR.predict([t[0] for t in model_inputs])
         anonymized_tokens = anonymize_tokens(model_inputs, tags)
-        original_anonymized_tokens = build_anonymized_tokens(inputs, model_inputs, anonymized_tokens)
+        original_anonymized_tokens, labels = build_anonymized_tokens(inputs, model_inputs, anonymized_tokens)
         assert len(inputs) == len(original_anonymized_tokens)
         equals = [before == after for before, after in zip(inputs, original_anonymized_tokens)]
         token_counter = 0
@@ -118,7 +135,7 @@ def run_model(images: List[PpmImagePlugin.PpmImageFile]
             )
             if word.strip():
                 if not equals[token_counter]:
-                    page.append((x, y, x + w, y + h))
+                    page.append(((x, y, x + w, y + h), get_original_label(labels[token_counter])))
                 token_counter += 1
         coordinates.append(page)
         tags_list.append(tags)

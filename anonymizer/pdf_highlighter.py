@@ -38,7 +38,7 @@ class PDFHighlighter:
                                                 self._coordinates):
             canvas = ImageDraw.Draw(page_image, 'RGBA')
             for coordinates in page_coordinates:
-                canvas.rectangle(coordinates, fill=colour)
+                canvas.rectangle(coordinates[0], fill=colour)  # TODO: Misha use coordinate labels here!!!
             yield page_image
 
     @staticmethod
