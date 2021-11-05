@@ -1,26 +1,24 @@
 import json
+import logging
 import os
 import traceback
 import warnings
 from datetime import datetime
-from pathlib import Path
 from typing import List, Tuple, Dict, Any
 
 import gc
 import yargy.tokenizer as ya
-import numpy as np
-from allennlp.data.dataset_readers.dataset_utils.span_utils import iob1_tags_to_spans
 from flask import abort, jsonify, request, send_file, Flask
 from pdf2image import convert_from_path
 from PIL import PpmImagePlugin
 from pytesseract import image_to_data, Output
 
+from anonymizer import ROOT_PATH
 from anonymizer.converters import anything2pdf
 from anonymizer.pdf_highlighter import PDFHighlighter
 from anonymizer.predictor import NewsNER
 from confidence import gather_data_for_confidence
 
-ROOT_PATH = Path(__file__).parent.parent.resolve()
 INPUT_PATH = ROOT_PATH / 'INPUT'
 INPUT_PATH.mkdir(exist_ok=True)
 OUTPUT_PATH = ROOT_PATH / 'OUTPUT'
@@ -32,12 +30,19 @@ PREDICTOR = NewsNER(ROOT_PATH / 'model' / 'model')
 app = Flask(__name__, static_url_path='', static_folder='front')
 TOKENIZER = ya.Tokenizer()
 
+confidence_logger = logging.getLogger('confidence')
+confidence_logger.setLevel(logging.INFO)
 
 def repeat_to_length(string_to_expand: str, length: int) -> str:
     return (string_to_expand * length)[:length]
 
 
-def requires_validation(all_tags: List[List[str]], ocr_result: List, ocr_confidences: List[int]) -> Tuple[bool, Dict]:
+def requires_validation(
+        all_tags: List[List[str]],
+        ocr_result: List,
+        ocr_confidences: List[int],
+        tokens: List[str]
+) -> Tuple[bool, Dict]:
     """
     Вычисляем reject option -- нужно ли отправлять документ на валидацию.
     На валидацю отправляются документы по следующим признакам:
@@ -49,7 +54,7 @@ def requires_validation(all_tags: List[List[str]], ocr_result: List, ocr_confide
         и таким документам нужна верификация
     """
     # remove everything except PER
-    confidence_features = gather_data_for_confidence(all_tags, ocr_result, ocr_confidences)
+    confidence_features = gather_data_for_confidence(all_tags, ocr_result, ocr_confidences, tokens)
     not_sure = False
     if not ocr_result:
         not_sure = True
@@ -59,7 +64,10 @@ def requires_validation(all_tags: List[List[str]], ocr_result: List, ocr_confide
         not_sure = True
     if confidence_features['num_one_token_spans'] > 20:
         not_sure = True
-    if confidence_features['ocr_confidences_mean'] < 88:
+    if confidence_features['ocr_confidences_mean'] < 85:
+        not_sure = True
+    if confidence_features['oov_ratio'] > 0.5:
+        confidence_logger.info(f'Exceeded oov ratio: {confidence_features["oov_ratio"]}')
         not_sure = True
     return not_sure, confidence_features
 
@@ -99,14 +107,14 @@ def build_anonymized_tokens(real_inputs, model_inputs: List[List], new_tokens: L
 
 
 def get_original_label(label: str) -> str:
-    if label.startswith('P'):
+    if 'P' in label:
         return 'PER'
-    elif label.startswith('L'):
+    elif 'L' in label:
         return 'LOC'
-    elif label.startswith('O'):
+    elif 'O' in label:
         return 'ORG'
     else:
-        return ''
+        raise RuntimeError(f'Unknown label: {label}')
 
 
 def run_model(images: List[PpmImagePlugin.PpmImageFile]
@@ -114,6 +122,7 @@ def run_model(images: List[PpmImagePlugin.PpmImageFile]
     coordinates = []
     tags_list = []
     confidences = []
+    tokens = []
     for i, image in enumerate(images):
         ocr_result = image_to_data(image, output_type=Output.DICT, lang='rus')
         inputs = [word.strip() for word in ocr_result['text'] if word.strip()]
@@ -125,6 +134,7 @@ def run_model(images: List[PpmImagePlugin.PpmImageFile]
         equals = [before == after for before, after in zip(inputs, original_anonymized_tokens)]
         token_counter = 0
         confidences.extend(ocr_result['conf'])
+        # tokens.extend(ocr_result['text'])
         page = []
         for j, word in enumerate(ocr_result['text']):
             (x, y, w, h) = (
@@ -133,13 +143,15 @@ def run_model(images: List[PpmImagePlugin.PpmImageFile]
                 ocr_result['width'][j],
                 ocr_result['height'][j]
             )
-            if word.strip():
+            if word.strip() and x > 0 and y > 0:
                 if not equals[token_counter]:
                     page.append(((x, y, x + w, y + h), get_original_label(labels[token_counter])))
+                else:
+                    tokens.append(word)
                 token_counter += 1
         coordinates.append(page)
         tags_list.append(tags)
-    not_sure, features = requires_validation(tags_list, coordinates, confidences)
+    not_sure, features = requires_validation(tags_list, coordinates, confidences, tokens)
     return coordinates, not_sure, features
 
 
