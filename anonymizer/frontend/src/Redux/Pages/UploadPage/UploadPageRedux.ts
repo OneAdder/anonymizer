@@ -15,7 +15,8 @@ const initialState:iState.Value = {
             data: {
                 filename:"1636053420.725758_cv.pdf",
                 input:"1636053412.614628_cv.pdf.pdf",
-                not_sure: true
+                not_sure: true,
+                pages: null
             },
             file: {
                 date:"2021-11-04T19:16:52.275Z",
@@ -69,7 +70,10 @@ const Slice = createSlice({
                 return state;
             }
             requestSuccess(state.files[id]);
-            state.files[id].data = data;
+            state.files[id].data = {
+                ...data,
+                pages: null
+            };
             const fileLink = state.files[id].file;
             if (!fileLink) return state;
             fileLink.status = 'success';
@@ -105,6 +109,14 @@ const Slice = createSlice({
             const currentScale = file.settings.scale;
             if (type === 'decrease') file.settings.scale = currentScale - 0.1;
             else file.settings.scale = currentScale + 0.1;
+        },
+        setPagesNumber: (state, action: PayloadAction<iActions.setPagesNumber>) => {
+            const {payload} = action;
+            const {id, num} = payload;
+            const file = state.files[id];
+            if (!file) return state;
+            if (!file.data) return state;
+            file.data.pages = num;
         }
     }
 });

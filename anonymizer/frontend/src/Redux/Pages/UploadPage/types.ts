@@ -10,10 +10,13 @@ export declare namespace iState {
         scale: number;
         verification: boolean;
     }
+    type AnonimizeData = iAnonimize.oAnonimize & {
+        pages: null | number;
+    }
     type Value = {
         files: {
             [key:string]: 
-                RequestFullState<iAnonimize.oAnonimize> & 
+                RequestFullState<AnonimizeData> & 
                 {
                     file: iFiles.Item | null;    
                     settings: Settings;
@@ -38,5 +41,9 @@ export declare namespace iActions {
     type changeSettings = {
         id: string;
         settings: Partial<iState.Settings>
+    }
+    type setPagesNumber = {
+        id: string;
+        num: number;
     }
 }

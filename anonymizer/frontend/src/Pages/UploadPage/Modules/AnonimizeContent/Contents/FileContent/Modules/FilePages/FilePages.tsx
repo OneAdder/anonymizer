@@ -1,18 +1,22 @@
 import React, {useState} from 'react';
-import { Document, Page, pdfjs } from 'react-pdf';
+import { Document, pdfjs } from 'react-pdf';
 import {useActiveUrl} from '../../../../Hooks/useActiveUrl';
 import styles from './FilePages.module.less';
-import {useActiveSettings} from '../../../../../../Hooks/useActiveSettings';
+import PageItem from './Modules/PageItem/PageItem';
+import {useActiveFile} from '../../../../../../Hooks/useActiveFile';
+import {useDispatch} from 'react-redux';
+import Actions from '@actions';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-type iPageComponent = {
-    index: number;
-}
+
 
 const FileContent = () => {
-    const [pages, setPages] = useState<null|number>(null);
+    const activeFile = useActiveFile();
+    const dispatch = useDispatch();
     const url = useActiveUrl();
+    const pages = activeFile?.data?.pages;
 
+    if (!activeFile?.data) return null;
     if (!url) return null;
 
     return (
@@ -20,35 +24,27 @@ const FileContent = () => {
             renderMode="canvas"
             className={styles.document}
             onLoadSuccess={(data) => {
-                setPages(data.numPages);
+                if (!activeFile.file) return;
+                dispatch(Actions.Pages.UploadPage.setPagesNumber({
+                    num: data.numPages,
+                    id: activeFile.file.uid
+                }));
             }}
+
             file={url}>
             {
                 pages && new Array(pages)
                     .fill('')
                     .map((item, index) => (
-                        <PageComponent
+                        
+                        <PageItem
+                            
                             key={index}
                             index={index}
                         />
                     ))
             }
         </Document> 
-    );
-};
-
-
-const PageComponent = (props: iPageComponent) => {
-    const settings = useActiveSettings();
-    if (!settings) return null;
-    return (
-        <Page
-            scale={settings.scale}
-            className={styles.page}
-            renderAnnotationLayer={false}
-            renderTextLayer={true}
-            pageNumber={props.index + 1}
-        />
     );
 };
 

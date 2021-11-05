@@ -51,7 +51,9 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": [],
+    "extends": [
+        "react"
+    ],
     "env": {
       "browser": true,
       "es6": true,

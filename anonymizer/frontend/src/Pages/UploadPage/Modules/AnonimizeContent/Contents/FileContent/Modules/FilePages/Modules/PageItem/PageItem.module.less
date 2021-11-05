@@ -1,0 +1,15 @@
+.wrapper {
+    margin-top: 40px;
+    margin-left: 30px;
+    margin-right: 30px;
+    flex-grow: 1;
+    &:first-child {
+        margin-top: 0;
+    }
+    :global {
+        .react-pdf__Page__svg,
+        .react-pdf__Page__canvas {
+            margin: auto;
+        }
+    }
+}

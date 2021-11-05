@@ -1,2 +1,2 @@
 export {default as Button} from './Button/Button';
-export {default as Notification} from './Notification/Notification';
+export {default as notification} from './Notification/Notification';
