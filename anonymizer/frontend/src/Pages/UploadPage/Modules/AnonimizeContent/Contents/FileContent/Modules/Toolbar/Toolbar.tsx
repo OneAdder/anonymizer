@@ -4,9 +4,9 @@ import {useActiveFile} from '../../../../../../Hooks/useActiveFile';
 import {Row, Col, Tooltip} from 'antd';
 import classnames from 'classnames';
 import Download from './Modules/Download/Download';
-import Box from '@root/Components/Box/Box';
-import Status from '@root/Components/Status/Status';
 import ChangesMode from './Modules/ChangesMode/ChangesMode';
+import Verificaition from './Modules/Verification/Verification';
+import FileScale from './Modules/FileScale/FileScale';
 
 const Toolbar = () => {
     const activeFile = useActiveFile();
@@ -15,44 +15,40 @@ const Toolbar = () => {
 
     return (
         <div className={styles.wrapper}>
-            <Row className={styles.row}>
-                <Col span={8}>
-                    <div className={styles.title}>
-                        {activeFile.file.name}
-                    </div>
+            <Row 
+                gutter={[20, 0]}
+                className={styles.row}>
+                <Col className={styles.fileCol}>
+                    <Row 
+                        gutter={[20, 0]}
+                        align="middle">
+                        <Col>
+                            <div className={styles.title}>
+                                {activeFile.file.name}
+                            </div>
+                        </Col>
+                        <Col>
+                            <FileScale />
+                        </Col>
+                    </Row>
                 </Col>
-                <Col 
-                    className={classnames(styles.colCenter, styles.changesCol)}
-                    span={8}>
+                <Col className={classnames(styles.colCenter, styles.changesCol)}>
                     <div className={styles.changesLabel}>
                         Изменения: 
                     </div>
                     <ChangesMode />
                 </Col>
-                <Col span={4}>
-                    <Box visible={Boolean(activeFile.data?.not_sure)}>
-                        <>
-                            <Tooltip 
-                                placement="bottom"
-                                title="Требуется ручная верификация результатов анонимизации">
-                                <div>
-                                    <Status color="red">
-                                        Требуется верификация
-                                    </Status>
-                                </div>
-                            </Tooltip>
-                        </>
-                    </Box>
-                </Col>
-
-                <Col 
-                    className={styles.colEnd}
-                    span={4}>
-                    <Download />
+                <Col className={styles.resultsCol}>
+                    <Row className={styles.resultsRow}>
+                        <Col>
+                            <Verificaition />
+                        </Col>
+                        <Col>
+                            <Download />
+                        </Col>
+                    </Row>
                 </Col>
             </Row>
-            
-            
         </div>
     );
 };

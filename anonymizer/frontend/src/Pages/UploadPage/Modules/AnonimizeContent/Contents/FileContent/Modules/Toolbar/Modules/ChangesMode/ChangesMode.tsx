@@ -16,12 +16,14 @@ const ChangesMode = () => {
                 const {target} = event;
                 const {value} = target;
                 if (!activeFile.file?.uid) return;
-                dispatch(Actions.Pages.UploadPage.changeMode({
+                dispatch(Actions.Pages.UploadPage.changeSettings({
                     id: activeFile.file.uid,
-                    mode: value 
+                    settings: {
+                        mode: value
+                    }
                 }));
             }}
-            value={activeFile.mode}>
+            value={activeFile.settings.mode}>
             <Radio.Button value="until">
                 Было
             </Radio.Button>

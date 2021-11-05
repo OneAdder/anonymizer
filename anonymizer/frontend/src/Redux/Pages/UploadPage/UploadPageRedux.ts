@@ -24,7 +24,11 @@ const initialState:iState.Value = {
                 status:"success",
                 uid:"NTg3NDc5YXBwbGljYXRpb24vcGRmMTYzNTA4ODQyNDYwNg=="
             },
-            mode: 'after'
+            settings: {
+                mode: 'after',
+                scale: 1,
+                verification: false
+            }
         }
     },
     activeFile: null
@@ -41,7 +45,11 @@ const Slice = createSlice({
                 state.files[id] = {
                     ...getFullState(),
                     file: null,
-                    mode: 'after'
+                    settings: {
+                        mode: 'after',
+                        scale: 1,
+                        verification: false
+                    }
                 };
                 state.files[id].file = {
                     date: moment().toISOString(),
@@ -79,12 +87,24 @@ const Slice = createSlice({
         setActiveFile: (state, action: PayloadAction<iActions.setActiveFile>) => {
             state.activeFile = action.payload;
         },
-        changeMode: (state, action: PayloadAction<iActions.changeMode>) => {
+        changeSettings: (state, action: PayloadAction<iActions.changeSettings>) => {
             const {payload} = action;
-            const {id, mode} = payload;
+            const {id, settings} = payload;
             const file = state.files[id];
             if (!file) return state;
-            file.mode = mode;
+            file.settings = {
+                ...file.settings,
+                ...settings
+            };
+        },
+        changeScale: (state, action: PayloadAction<iActions.changeScale>) => {
+            const {payload} = action;
+            const {id, type} = payload;
+            const file = state.files[id];
+            if (!file) return state;
+            const currentScale = file.settings.scale;
+            if (type === 'decrease') file.settings.scale = currentScale - 0.1;
+            else file.settings.scale = currentScale + 0.1;
         }
     }
 });

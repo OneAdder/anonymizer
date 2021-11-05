@@ -13,8 +13,13 @@ const FileContent = () => {
         <>
             <Toolbar />
             <div className={styles.pdfContent}>
-                <Scrollbars>
+                <Scrollbars hideTracksWhenNotNeeded>
                     <FilePages />  
+                    {/* <embed 
+                        src={url} 
+                        width="100%"
+                        height="100%"
+                    /> */}
                 </Scrollbars>    
             </div>
         </>

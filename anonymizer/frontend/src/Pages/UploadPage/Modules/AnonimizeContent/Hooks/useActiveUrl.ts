@@ -8,7 +8,7 @@ export const useActiveUrl = () => {
     const url = useMemo(() => {
         if (!activeFile) return null;
         if (!activeFile.data) return null;
-        if (activeFile.mode === 'after') {
+        if (activeFile.settings.mode === 'after') {
             return Api.Anonimize.download({
                 name: activeFile.data.filename,
                 hidden: true
