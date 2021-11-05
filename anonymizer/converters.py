@@ -17,7 +17,7 @@ def anything2pdf(
         output_path.write_bytes(input_path.read_bytes())
         return
     p = run(
-        ['unoconvert', str(input_path), str(output_path)],
+        ['/usr/local/bin/unoconvert', str(input_path), str(output_path)],
         capture_output=True,
     )
     if p.returncode:

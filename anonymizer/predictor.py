@@ -30,7 +30,6 @@ def load_predictor(
         overrides = json.loads(overrides)
     overrides = deepcopy(overrides) or {}
     config_path = os.path.join(prefix, "config.json")
-    config_contents = Path(config_path).read_text()
     print(overrides)
     overrides = json.dumps(overrides)
     params = Params.from_file(
@@ -116,7 +115,7 @@ class LongSequencePredictor(Predictor):
         predictions = []
         for i in range(len(instances) // self._batch_size + 1):
             batch = instances[i * self._batch_size: (i + 1) * self._batch_size]
-            if batch == []:
+            if not batch:
                 break
             predictions += self._model.forward_on_instances(batch)
         return predictions
@@ -159,20 +158,17 @@ class LongSequencePredictor(Predictor):
             instance_tags = prediction["tags"]
             instance_tokens, instance_tags = self.strip_special_tokens(instance_tokens, instance_tags)
             if i == 0:
-                # Первый инстанс, берем первые 2/3
                 positions = slice(0, self._overlap * 2)
             elif i == len(instances) - 1:
-                # Последний инстанс, берем последние 2/3
                 positions = slice(self._overlap, len(instance_tags) + 1)
             else:
-                # Промежуточный инстанс, берем только серединную треть
                 positions = slice(self._overlap, self._overlap * 2)
             document_tokens += instance_tokens[positions]
             document_tags += instance_tags[positions]
 
         return document_tokens, document_tags
 
-    def _inner_predict(self, instances: List[Instance], text: str) -> JsonDict:
+    def inner_predict(self, instances: List[Instance]) -> JsonDict:
         predictions: List[JsonDict] = self._predict_on_instances(instances)
         assert len(instances) == len(predictions), (len(instances), len(predictions))
 
@@ -203,7 +199,7 @@ class LongSequencePredictor(Predictor):
         if not text or text.isspace():
             return {"entities": [], "tags": []}
         instances: List[Instance] = self._json_to_instance(inputs)
-        return self._inner_predict(instances, inputs["text"])
+        return self.inner_predict(instances)
 
     def _json_to_instance(self, json_dict: JsonDict) -> List[Instance]:
         text: List[str] = json_dict["text"]
@@ -230,9 +226,10 @@ class NewsNER:
         self._zero_overlap = False
         self._overlap = self._token_window // 3
         self.n_iterations = n_iterations
+        transformer_path = f"{os.environ['PRETRAINED_TRANSFORMERS_DIR']}"
         overrides = {
-            "dataset_reader.token_indexers.tokens.model_name": os.environ['PRETRAINED_TRANSFORMERS_DIR'],
-            "model.text_field_embedder.token_embedders.tokens.model_name": os.environ['PRETRAINED_TRANSFORMERS_DIR']
+            "dataset_reader.token_indexers.tokens.model_name": transformer_path,
+            "model.text_field_embedder.token_embedders.tokens.model_name": transformer_path
         }
         # overrides.pop("dataset_reader.tokenizer.model_name")
         overrides['dataset_reader.token_indexers.tokens.type'] = 'pretrained_transformer_mismatched'
@@ -244,7 +241,6 @@ class NewsNER:
         self.predictor = load_predictor(
             path,
             "long_sequence",
-            # max_sequence_length=512,
             overrides=overrides,
             device=device,
             token_window=token_window,

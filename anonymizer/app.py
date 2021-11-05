@@ -1,9 +1,10 @@
+import json
 import os
 import traceback
 import warnings
 from datetime import datetime
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Dict, Any
 
 import gc
 import yargy.tokenizer as ya
@@ -17,6 +18,7 @@ from pytesseract import image_to_data, Output
 from anonymizer.converters import anything2pdf
 from anonymizer.pdf_highlighter import PDFHighlighter
 from anonymizer.predictor import NewsNER
+from confidence import gather_data_for_confidence
 
 ROOT_PATH = Path(__file__).parent.parent.resolve()
 INPUT_PATH = ROOT_PATH / 'INPUT'
@@ -35,7 +37,7 @@ def repeat_to_length(string_to_expand: str, length: int) -> str:
     return (string_to_expand * length)[:length]
 
 
-def requires_validation(all_tags: List[List[str]], ocr_result: List, confidences: List[int]) -> bool:
+def requires_validation(all_tags: List[List[str]], ocr_result: List, ocr_confidences: List[int]) -> Tuple[bool, Dict]:
     """
     Вычисляем reject option -- нужно ли отправлять документ на валидацию.
     На валидацю отправляются документы по следующим признакам:
@@ -47,23 +49,19 @@ def requires_validation(all_tags: List[List[str]], ocr_result: List, confidences
         и таким документам нужна верификация
     """
     # remove everything except PER
-    all_tags = [[tag if tag.endswith('PER') else 'O' for tag in page_tags] for page_tags in all_tags ]
-    spans = [iob1_tags_to_spans(tags) for tags in all_tags]
+    confidence_features = gather_data_for_confidence(all_tags, ocr_result, ocr_confidences)
+    not_sure = False
     if not ocr_result:
-        return True
-    if len(ocr_result) >= 7:
-        return True
-    if sum([len(page_spans) for page_spans in spans]) > 40:
-        return True
-    one_token_spans = []
-    for page_spans in spans:
-        one_token_spans.extend([span for span in page_spans if span[1][1] - span[1][0] == 0])
-    if len(one_token_spans) > 20:
-        return True
-    cleaned_confs = [i for i in confidences if isinstance(i, int)]
-    if np.array(cleaned_confs).mean() < 70:
-        return True
-    return False
+        not_sure = True
+    if confidence_features['num_pages'] > 7:
+        not_sure = True
+    if confidence_features['num_spans'] > 40:
+        not_sure = True
+    if confidence_features['num_one_token_spans'] > 20:
+        not_sure = True
+    if confidence_features['ocr_confidences_mean'] < 88:
+        not_sure = True
+    return not_sure, confidence_features
 
 
 def build_input_to_model(inputs: List[str]) -> List[List]:
@@ -95,7 +93,7 @@ def build_anonymized_tokens(real_inputs, model_inputs: List[List], new_tokens: L
 
 
 def run_model(images: List[PpmImagePlugin.PpmImageFile]
-              ) -> Tuple[List[List[Tuple[int, int, int, int]]], bool]:
+              ) -> Tuple[List[List[Tuple[int, int, int, int]]], bool, Dict[str, Any]]:
     coordinates = []
     tags_list = []
     confidences = []
@@ -124,8 +122,8 @@ def run_model(images: List[PpmImagePlugin.PpmImageFile]
                 token_counter += 1
         coordinates.append(page)
         tags_list.append(tags)
-    not_sure = requires_validation(tags_list, coordinates, confidences)
-    return coordinates, not_sure
+    not_sure, features = requires_validation(tags_list, coordinates, confidences)
+    return coordinates, not_sure, features
 
 
 @app.route('/')
@@ -146,13 +144,15 @@ def anonymize():
     anything2pdf(raw_path, input_path)
     images = convert_from_path(input_path)  #, dpi=PDFHighlighter.DPI)
     try:
-        coordinates, not_sure = run_model(images)
+        coordinates, not_sure, confidence_features = run_model(images)
     except Exception as e:
         traceback.print_exc()
         warnings.warn(f'Произошла ошибка: {e}')
-        coordinates, not_sure = [[]] * len(images), True
+        coordinates, not_sure, confidence_features = [[]] * len(images), True, {}
     pdf_path = OUTPUT_PATH / f'{datetime.now().timestamp()}_{file.filename}'
     pdf_path.mkdir()
+    confidence_path = pdf_path / 'confidences.json'
+    confidence_path.write_text(json.dumps(confidence_features, indent=4, ensure_ascii=False))
     highlighter = PDFHighlighter(
         input_data=images,
         output_path=pdf_path,
