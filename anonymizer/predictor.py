@@ -177,6 +177,8 @@ class LongSequencePredictor(Predictor):
         else:
             document_tokens, document_tags = self._reconstruct_with_overlap(instances, predictions)
 
+        if len(document_tags) > len(document_tokens):
+            document_tags = document_tags[:len(document_tokens)]
         assert len(document_tokens) == len(document_tags), (document_tokens, document_tags)
         output_dict = {
             "tags": document_tags,
