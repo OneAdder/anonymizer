@@ -174,7 +174,6 @@ def anonymize():
         input_data=images,
         output_path=pdf_path,
         coordinates=coordinates,
-        not_sure=not_sure,
     )
     gc.collect()
     return jsonify({'filename': highlighter.blurred_pdf.parent.name,
