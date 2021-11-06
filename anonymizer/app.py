@@ -17,7 +17,7 @@ from anonymizer import ROOT_PATH
 from anonymizer.converters import anything2pdf
 from anonymizer.pdf_highlighter import PDFHighlighter
 from anonymizer.predictor import NewsNER
-from confidence import gather_data_for_confidence
+from anonymizer.confidence import gather_data_for_confidence
 
 INPUT_PATH = ROOT_PATH / 'INPUT'
 INPUT_PATH.mkdir(exist_ok=True)
