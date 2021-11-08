@@ -64,6 +64,9 @@ const Verificaition = () => {
                     onClick={() => {
                         if (!activeFile.file) return;
                         turnOffNotification.open();
+                        dispatch(Actions.Pages.UploadPage.endVerification({
+                            id: activeFile.file.uid
+                        }));
                         dispatch(Actions.Pages.UploadPage.changeSettings({
                             id: activeFile.file.uid,
                             settings: {

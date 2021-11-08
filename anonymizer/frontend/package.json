@@ -56,7 +56,6 @@
   },
   "eslintConfig": {
     "extends": [
-      "react"
     ],
     "env": {
       "browser": true,

@@ -10,6 +10,15 @@ export declare namespace iState {
         scale: number;
         verification: boolean;
     }
+    type verificationNode = {
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+        verificated: boolean;
+        key: string;
+        pageIndex: number;
+    }
     type AnonimizeData = iAnonimize.oAnonimize & {
         pages: null | number;
     }
@@ -20,6 +29,7 @@ export declare namespace iState {
                 {
                     file: iFiles.Item | null;    
                     settings: Settings;
+                    verificationNodes: verificationNode[]
                 }
         },
         activeFile: string | null;
@@ -45,5 +55,16 @@ export declare namespace iActions {
     type setPagesNumber = {
         id: string;
         num: number;
+    }
+    type addVerificationNode = {
+        node: Omit<iState.verificationNode, 'key' | 'verificated'>;
+        id: string;
+    }
+    type endVerification = {
+        id: string
+    }
+    type deleteVerificationNode = {
+        fileId: string;
+        nodeId: string;
     }
 }

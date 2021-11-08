@@ -3,6 +3,7 @@ import {iActions, iState} from './types';
 import {getFullState, requestStart, requestSuccess, requestError} from '@root/Utils/Redux/requestState/getRequestState';
 import {getFileID} from '@utils/Files/getFileId';
 import moment from 'moment';
+import {getVerificationKey} from '../../../Utils/Pdf/getVerificationKey';
 
 
 const initialState:iState.Value = {
@@ -25,6 +26,7 @@ const initialState:iState.Value = {
                 status:"success",
                 uid:"NTg3NDc5YXBwbGljYXRpb24vcGRmMTYzNTA4ODQyNDYwNg=="
             },
+            verificationNodes: [],
             settings: {
                 mode: 'after',
                 scale: 1,
@@ -46,6 +48,7 @@ const Slice = createSlice({
                 state.files[id] = {
                     ...getFullState(),
                     file: null,
+                    verificationNodes: [],
                     settings: {
                         mode: 'after',
                         scale: 1,
@@ -117,6 +120,34 @@ const Slice = createSlice({
             if (!file) return state;
             if (!file.data) return state;
             file.data.pages = num;
+        },
+        addVerificationNode: (state, action: PayloadAction<iActions.addVerificationNode>) => {
+            const {payload} = action;
+            const {id, node} = payload;
+            const file = state.files[id];
+            if (!file) return state;
+            file.verificationNodes.push({
+                ...node,
+                key: getVerificationKey(node.x, node.y, node.width, node.height),
+                verificated: false
+            });
+        },
+        endVerification: (state, action: PayloadAction<iActions.endVerification>) => {
+            const {payload} = action;
+            const {id} = payload;
+            const file = state.files[id];
+            if (!file) return state;
+            file.verificationNodes = file.verificationNodes.map((item) => {
+                item.verificated = true;
+                return item;
+            });
+        },
+        deleteVerificationNode: (state, action: PayloadAction<iActions.deleteVerificationNode>) => {
+            const {payload} = action;
+            const {nodeId, fileId} = payload;
+            const file = state.files[fileId];
+            if (!file) return state;
+            file.verificationNodes = file.verificationNodes.filter((item) => item.key !== nodeId);
         }
     }
 });
