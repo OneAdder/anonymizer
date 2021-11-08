@@ -36,7 +36,6 @@ const FileContent = () => {
                 pages && new Array(pages)
                     .fill('')
                     .map((item, index) => (
-                        
                         <PageItem
                             
                             key={index}

@@ -4,7 +4,7 @@ import {useActiveUrl} from '../../Hooks/useActiveUrl';
 import styles from './FileContent.module.less';
 import {Scrollbars} from 'react-custom-scrollbars';
 import FilePages from './Modules/FilePages/FilePages';
-
+import PdfViewer from './Modules/PdfViewer/PdfViewer';
 
 const FileContent = () => {
     const url = useActiveUrl();
@@ -14,7 +14,8 @@ const FileContent = () => {
             <Toolbar />
             <div className={styles.pdfContent}>
                 <Scrollbars hideTracksWhenNotNeeded>
-                    <FilePages />  
+                    <PdfViewer />
+                    {/* <FilePages /> */}
                 </Scrollbars>    
             </div>
         </>
